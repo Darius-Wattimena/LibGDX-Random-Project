@@ -27,6 +27,11 @@ public class ScreenRenderer {
         boolean isWPressed = Gdx.input.isKeyPressed(Input.Keys.W);
         boolean isDPressed = Gdx.input.isKeyPressed(Input.Keys.D);
         boolean isSPressed = Gdx.input.isKeyPressed(Input.Keys.S);
+        boolean isRPressed = Gdx.input.isKeyPressed(Input.Keys.R);
+
+        if (isRPressed) {
+            blockRenderer.renewMap();
+        }
 
         if (!(isWPressed && isSPressed) && isWPressed || isSPressed) {
             if (isWPressed) {

@@ -1,16 +1,19 @@
 package nl.antimeta.game.Blocks.Map;
 
+import com.badlogic.gdx.Gdx;
 import nl.antimeta.game.Constants;
 import nl.antimeta.game.Rng;
 
 class BlockMapTypeGenerator {
 
     private int[][] blockTypeArray;
+    private double[][] blockHeightArray;
     private int totalBlocksWidth;
     private int totalBlocksHeight;
 
     BlockMapTypeGenerator(int totalBlocksWidth, int totalBlocksHeight) {
         this.blockTypeArray = new int[totalBlocksWidth][totalBlocksHeight];
+        this.blockHeightArray = new double[totalBlocksWidth][totalBlocksHeight];
         this.totalBlocksWidth = totalBlocksWidth;
         this.totalBlocksHeight = totalBlocksHeight;
         generateTypeMap();
@@ -22,56 +25,85 @@ class BlockMapTypeGenerator {
             for (int y = 0; y < totalBlocksHeight; y++) {
                 if (first) {
                     first = false;
-                    blockTypeArray[x][y] = Rng.randInt(Constants.BLOCK_TYPE_PLAIN, Constants.BLOCK_TYPE_SEA);
+                    double startHeight = 0.0;
+                    blockHeightArray[x][y] = startHeight;
+                    blockTypeArray[x][y] = calculateNewBlockType(startHeight);
                 }
                 else {
-                    int blockLeftType = getLeftBlockType(x, y);
-                    int blockBelowType = getBelowBlockType(x, y);
-
-                    int blockType = calculateNewBlockType(blockLeftType, blockBelowType);
+                    double blockLeftHeight = getLeftBlockHeigth(x, y);
+                    double blockBelowHeight = getBelowBlockHeigth(x, y);
+                    double newBlockHeight = calculateNewBlockHeight(blockLeftHeight, blockBelowHeight);
+                    int blockType = calculateNewBlockType(newBlockHeight);
+                    blockHeightArray[x][y] = newBlockHeight;
                     blockTypeArray[x][y] = blockType;
                 }
             }
         }
     }
 
+    private double calculateNewBlockHeight(double blockLeftHeight, double blockBelowHeight) {
+        double increaseChance = Rng.randDouble(0, 1);
+        double blocksAverageHeight = 0.0;
+        double newBlockHeight;
+        double randomIncrease;
+
+        if (blockLeftHeight != -1 && blockBelowHeight != -1) {
+            blocksAverageHeight = (blockLeftHeight + blockBelowHeight) / 2;
+        } else if (blockLeftHeight != -1) {
+            blocksAverageHeight = blockLeftHeight;
+        } else if (blockBelowHeight != -1) {
+            blocksAverageHeight = blockBelowHeight;
+        }
+
+        if (increaseChance < 0.45) {
+            if (blocksAverageHeight < 0.1) {
+                newBlockHeight = 0.0;
+            } else {
+                double randomDecrease = Rng.randDouble(0.05, 0.1);
+                newBlockHeight = blocksAverageHeight - randomDecrease;
+            }
+        } else if (increaseChance < 0.55) {
+            randomIncrease = Rng.randDouble(-0.05, 0.05);
+            newBlockHeight = blocksAverageHeight + randomIncrease;
+        } else {
+            randomIncrease = Rng.randDouble(0.05, 0.1);
+            newBlockHeight = blocksAverageHeight + randomIncrease;
+            if (newBlockHeight > 1.0) {
+                newBlockHeight = 1.0;
+            }
+        }
+
+        return newBlockHeight;
+    }
+
     int[][] getBlockTypeArray() {
         return blockTypeArray;
     }
 
-    private int calculateNewBlockType(int leftBlockType, int belowBlockType) {
-        int randomBlockTypeChance = Rng.nextInt(100);
-        int newBlockType = -1;
-
-        if (leftBlockType != -1 && belowBlockType != -1 && leftBlockType == belowBlockType) {
-            if (randomBlockTypeChance < 80) {
-                newBlockType = leftBlockType;
-            }
-        } else if (leftBlockType != -1 && belowBlockType != -1) {
-            if (randomBlockTypeChance < 45) {
-                newBlockType = leftBlockType;
-            } else if (randomBlockTypeChance < 90) {
-                newBlockType = belowBlockType;
-            }
-        } else if (leftBlockType != -1) {
-            if (randomBlockTypeChance < 60) {
-                newBlockType = leftBlockType;
-            }
-        } else if (belowBlockType != -1) {
-            if (randomBlockTypeChance < 60) {
-                newBlockType = belowBlockType;
-            }
+    private int calculateNewBlockType(double blockHeight) {
+        if (blockHeight > 0.5) {
+            return Constants.BLOCK_TYPE_PLAIN;
+        } else {
+            return Constants.BLOCK_TYPE_SEA;
         }
-
-        if (newBlockType == -1) {
-            newBlockType = getRandomBlockType();
-        }
-
-        return newBlockType;
     }
 
     private int getRandomBlockType() {
         return Rng.randInt(Constants.BLOCK_TYPE_PLAIN, Constants.BLOCK_TYPE_SEA);
+    }
+
+    private double getLeftBlockHeigth(int currentX, int currentY) {
+        if (currentX != 0) {
+            return blockHeightArray[currentX - 1][currentY];
+        }
+        return -1;
+    }
+
+    private double getBelowBlockHeigth(int currentX, int currentY) {
+        if (currentY != 0) {
+            return blockHeightArray[currentX][currentY - 1];
+        }
+        return -1;
     }
 
     private int getLeftBlockType(int currentX, int currentY) {

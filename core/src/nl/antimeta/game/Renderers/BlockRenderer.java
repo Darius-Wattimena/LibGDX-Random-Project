@@ -14,13 +14,19 @@ public class BlockRenderer {
     private BlockList list;
     private BlockBase[][] blocks;
 
-    public BlockRenderer() {
-        int mapWidth = 150;
-        int mapHeight = 100;
+    private int mapWidth = 150;
+    private int mapHeight = 100;
 
+    public BlockRenderer() {
         list = new BlockList();
         map = new BlockMap(list, mapWidth, mapHeight);
         blocks = new BlockBase[mapWidth][mapHeight];
+    }
+
+    public void renewMap() {
+        map.generateNew(list);
+        blocks = new BlockBase[mapWidth][mapHeight];
+        setup();
     }
 
     public void setup() {

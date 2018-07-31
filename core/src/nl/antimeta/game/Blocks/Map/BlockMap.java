@@ -16,6 +16,12 @@ public class BlockMap {
         mapArray = mapGenerator.getMapArray();
     }
 
+    public void generateNew(BlockList list) {
+        BlockMapTypeGenerator mapTypeGenerator = new BlockMapTypeGenerator(mapWidth, mapHeight);
+        BlockMapGenerator mapGenerator = new BlockMapGenerator(mapTypeGenerator, list);
+        mapArray = mapGenerator.getMapArray();
+    }
+
     public int getMapWidth() {
         return mapWidth;
     }
