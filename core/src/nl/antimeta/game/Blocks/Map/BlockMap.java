@@ -1,6 +1,6 @@
 package nl.antimeta.game.Blocks.Map;
 
-import nl.antimeta.game.Blocks.BlockHelper.BlockList;
+import nl.antimeta.game.Blocks.BlockList;
 
 public class BlockMap {
 

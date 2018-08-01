@@ -1,7 +1,7 @@
 package nl.antimeta.game.Blocks.Map;
 
 import nl.antimeta.game.Rng;
-import nl.antimeta.game.Blocks.BlockHelper.BlockList;
+import nl.antimeta.game.Blocks.BlockList;
 
 import java.util.List;
 
@@ -60,13 +60,13 @@ class BlockMapGenerator {
     }
 
     private int decideNewBlockId(int percentage, List<Integer> ids, int leftBlockId, int belowBlockId) {
-        if (percentage < 70) {
-            if (leftBlockId != -1) {
+        /*if (percentage < 70) {
+            *//*if (leftBlockId != -1) {
                 return leftBlockId;
             } else if (belowBlockId != -1) {
                 return belowBlockId;
-            }
-        }
+            }*//*
+        }*/
         int randomIndex = Rng.nextInt(ids.size());
         return ids.get(randomIndex);
     }

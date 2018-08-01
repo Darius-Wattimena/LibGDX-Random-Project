@@ -3,7 +3,7 @@ package nl.antimeta.game.Renderers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import nl.antimeta.game.Blocks.BlockHelper.BlockBase;
-import nl.antimeta.game.Blocks.BlockHelper.BlockList;
+import nl.antimeta.game.Blocks.BlockList;
 import nl.antimeta.game.Blocks.BlockHelper.BlockLocation;
 import nl.antimeta.game.Blocks.Map.BlockMap;
 import nl.antimeta.game.Constants;
@@ -14,7 +14,7 @@ public class BlockRenderer {
     private BlockList list;
     private BlockBase[][] blocks;
 
-    private int mapWidth = 150;
+    private int mapWidth = 170;
     private int mapHeight = 100;
 
     public BlockRenderer() {
@@ -49,8 +49,7 @@ public class BlockRenderer {
         }
     }
 
-    public void render(int screenX, int screenY, int screenWidth, int screenHeight, Stage stage) {
-        stage.clear();
+    public void render(int screenX, int screenY, int screenWidth, int screenHeight, Stage stage, double mapZoomLevel) {
         int realScreenX = 0;
         int realScreenY;
         for (int x = screenX; x < screenWidth; x++) {
@@ -58,6 +57,7 @@ public class BlockRenderer {
             for (int y = screenY; y < screenHeight; y++) {
                 try {
                     BlockBase block = blocks[x][y];
+                    block.setCurrentZoomLevel(mapZoomLevel);
                     BlockLocation location = block.getLocation();
                     location.setScreenX(realScreenX * Constants.BLOCK_SIZE);
                     location.setScreenY(realScreenY * Constants.BLOCK_SIZE);

@@ -13,13 +13,24 @@ public class ScreenRenderer {
     private int widthTotalBlocks;
     private int heightTotalBlocks;
     private int x, y;
+    private double mapZoomLevel = 1.0;
+    private double mapZoomLevelIncrease = 0.03125;
+    private int mapMovementSpeed = 1;
+    private int screenWidth;
+    private int screenHeight;
 
-    public void setup(int width, int height) {
+    public void setup(int screenWidth, int screenHeight) {
         blockRenderer = new BlockRenderer();
         blockRenderer.setup();
         blockMap = blockRenderer.getMap();
-        widthTotalBlocks = (int) Math.ceil(width / Constants.BLOCK_SIZE);
-        heightTotalBlocks = (int) Math.ceil(height / Constants.BLOCK_SIZE);
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        calculateTotalBlocks();
+    }
+
+    private void calculateTotalBlocks() {
+        widthTotalBlocks = (int) Math.ceil(screenWidth / (Constants.BLOCK_SIZE * mapZoomLevel));
+        heightTotalBlocks = (int) Math.ceil(screenHeight / (Constants.BLOCK_SIZE * mapZoomLevel));
     }
 
     public void handleInput() {
@@ -28,24 +39,47 @@ public class ScreenRenderer {
         boolean isDPressed = Gdx.input.isKeyPressed(Input.Keys.D);
         boolean isSPressed = Gdx.input.isKeyPressed(Input.Keys.S);
         boolean isRPressed = Gdx.input.isKeyPressed(Input.Keys.R);
+        boolean isPlusPressed = Gdx.input.isKeyPressed(Input.Keys.P);
+        boolean isMinusPressed = Gdx.input.isKeyPressed(Input.Keys.M);
 
         if (isRPressed) {
             blockRenderer.renewMap();
         }
 
-        if (!(isWPressed && isSPressed) && isWPressed || isSPressed) {
-            if (isWPressed) {
+        handleZoom(isPlusPressed, isMinusPressed);
+        handleMapMovement(isWPressed, isSPressed, isAPressed, isDPressed);
+    }
+
+    private void handleMapMovement(boolean wPressed, boolean sPressed, boolean aPressed, boolean dPressed) {
+        if (!(wPressed && sPressed) && wPressed || sPressed) {
+            if (wPressed) {
                 moveScreen(Input.Keys.W);
             } else {
                 moveScreen(Input.Keys.S);
             }
         }
 
-        if (!(isAPressed && isDPressed) && isAPressed || isDPressed) {
-            if (isAPressed) {
+        if (!(aPressed && dPressed) && aPressed || dPressed) {
+            if (aPressed) {
                 moveScreen(Input.Keys.A);
             } else {
                 moveScreen(Input.Keys.D);
+            }
+        }
+    }
+
+    private void handleZoom(boolean plusPressed, boolean minusPressed) {
+        if (!(plusPressed && minusPressed) && plusPressed || minusPressed) {
+            if (plusPressed) {
+                if (mapZoomLevel != 1.0) {
+                    mapZoomLevel += mapZoomLevelIncrease;
+                    calculateTotalBlocks();
+                }
+            } else {
+                if (mapZoomLevel != 0.25) {
+                    mapZoomLevel -= mapZoomLevelIncrease;
+                    calculateTotalBlocks();
+                }
             }
         }
     }
@@ -54,27 +88,27 @@ public class ScreenRenderer {
         switch (keySide) {
             case Input.Keys.A:
                 if (x != 0)
-                    x -= 1;
+                    x -= mapMovementSpeed;
                 break;
             case Input.Keys.D:
                 if (!(widthTotalBlocks + x >= blockMap.getMapWidth())) {
-                    x += 1;
+                    x += mapMovementSpeed;
                 }
                 break;
             case Input.Keys.W:
                 if (!(heightTotalBlocks + y >= blockMap.getMapHeight())) {
-                    y += 1;
+                    y += mapMovementSpeed;
                 }
                 break;
             case Input.Keys.S:
                 if (y != 0)
-                    y -= 1;
+                    y -= mapMovementSpeed;
                 break;
         }
     }
 
     public void render(Stage stage) {
-        blockRenderer.render(x, y, x + widthTotalBlocks, y + heightTotalBlocks, stage);
+        blockRenderer.render(x, y, x + widthTotalBlocks, y + heightTotalBlocks, stage, mapZoomLevel);
     }
 
 

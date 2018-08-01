@@ -1,6 +1,5 @@
 package nl.antimeta.game.Blocks.Map;
 
-import com.badlogic.gdx.Gdx;
 import nl.antimeta.game.Constants;
 import nl.antimeta.game.Rng;
 
@@ -25,7 +24,7 @@ class BlockMapTypeGenerator {
             for (int y = 0; y < totalBlocksHeight; y++) {
                 if (first) {
                     first = false;
-                    double startHeight = 0.0;
+                    double startHeight = 0.3;
                     blockHeightArray[x][y] = startHeight;
                     blockTypeArray[x][y] = calculateNewBlockType(startHeight);
                 }
@@ -56,17 +55,17 @@ class BlockMapTypeGenerator {
         }
 
         if (increaseChance < 0.45) {
-            if (blocksAverageHeight < 0.1) {
+            if (blocksAverageHeight < 0.05) {
                 newBlockHeight = 0.0;
             } else {
-                double randomDecrease = Rng.randDouble(0.05, 0.1);
+                double randomDecrease = Rng.randDouble(0.0125, 0.05);
                 newBlockHeight = blocksAverageHeight - randomDecrease;
             }
         } else if (increaseChance < 0.55) {
-            randomIncrease = Rng.randDouble(-0.05, 0.05);
+            randomIncrease = Rng.randDouble(-0.025, 0.025);
             newBlockHeight = blocksAverageHeight + randomIncrease;
         } else {
-            randomIncrease = Rng.randDouble(0.05, 0.1);
+            randomIncrease = Rng.randDouble(0.0125, 0.05);
             newBlockHeight = blocksAverageHeight + randomIncrease;
             if (newBlockHeight > 1.0) {
                 newBlockHeight = 1.0;
@@ -81,15 +80,15 @@ class BlockMapTypeGenerator {
     }
 
     private int calculateNewBlockType(double blockHeight) {
-        if (blockHeight > 0.5) {
-            return Constants.BLOCK_TYPE_PLAIN;
-        } else {
+        if (blockHeight < 0.4) {
             return Constants.BLOCK_TYPE_SEA;
+        } else if (blockHeight < 0.5) {
+            return Constants.BLOCK_TYPE_LOW_SEA;
+        } else if (blockHeight < 0.55) {
+            return Constants.BLOCK_TYPE_BEACH;
+        } else {
+            return Constants.BLOCK_TYPE_PLAIN;
         }
-    }
-
-    private int getRandomBlockType() {
-        return Rng.randInt(Constants.BLOCK_TYPE_PLAIN, Constants.BLOCK_TYPE_SEA);
     }
 
     private double getLeftBlockHeigth(int currentX, int currentY) {

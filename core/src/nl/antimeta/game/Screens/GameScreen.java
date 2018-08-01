@@ -2,12 +2,10 @@ package nl.antimeta.game.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import nl.antimeta.game.Renderers.BlockRenderer;
 import nl.antimeta.game.Renderers.ScreenRenderer;
 
 public class GameScreen implements Screen {
@@ -36,6 +34,8 @@ public class GameScreen implements Screen {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         screenRenderer.handleInput();
+
+        stage.clear(); // Clear to re-render the new map position
         screenRenderer.render(stage);
         stage.act();
         stage.draw();

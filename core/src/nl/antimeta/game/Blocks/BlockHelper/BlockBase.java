@@ -10,6 +10,7 @@ public abstract class BlockBase extends Actor {
     private BlockConfig config;
     private BlockLocation location;
     private Texture texture;
+    private double currentZoomLevel = 1.0;
 
     public BlockBase(BlockConfig config, BlockLocation location, String textureFile) {
         this.config = config;
@@ -32,6 +33,16 @@ public abstract class BlockBase extends Actor {
         super.draw(batch, parentAlpha);
         batch.end();
         batch.begin();
-        batch.draw(texture, location.getScreenX(), location.getScreenY());
+
+        int x = (int) (location.getScreenX() * currentZoomLevel);
+        int y = (int) (location.getScreenY() * currentZoomLevel);
+        int width = (int) (config.getWidth() * currentZoomLevel);
+        int height = (int) (config.getHeight() * currentZoomLevel);
+
+        batch.draw(texture, x, y, width, height);
+    }
+
+    public void setCurrentZoomLevel(double currentZoomLevel) {
+        this.currentZoomLevel = currentZoomLevel;
     }
 }
